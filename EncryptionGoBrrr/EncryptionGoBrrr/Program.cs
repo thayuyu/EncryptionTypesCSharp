@@ -35,7 +35,7 @@ static string Encrypt(string plaintext, int depth)
     char[,] rail = new char[depth, plaintext.Length];
     bool down = false;
     int row = 0, col = 0;
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new();
 
     for (int i = 0; i < plaintext.Length; i++)
     {
@@ -88,7 +88,7 @@ static string Decrypt(string ciphertext, int depth)
         }
     }
 
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new();
     row = 0; col = 0;
     down = false;
 

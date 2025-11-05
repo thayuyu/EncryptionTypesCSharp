@@ -32,93 +32,58 @@ while (true)
 
 static string Encrypt(string plaintext, string key)
 {
-    int columns = key.Length;
-    int rows = (int)Math.Ceiling((double)plaintext.Length / columns);
-    char[,] matrix = new char[rows, columns];
+    StringBuilder result = new();
+    key = key.ToUpper();
+    int keyIndex = 0;
 
-    int index = 0;
-    for (int r = 0; r < rows; r++)
+    foreach (char c in plaintext)
     {
-        for (int c = 0; c < columns; c++)
+        if (char.IsLetter(c))
         {
-            if (index < plaintext.Length)
-                matrix[r, c] = plaintext[index++];
-            else
-                matrix[r, c] = ' ';
+            bool isUpper = char.IsUpper(c);
+            char offset = isUpper ? 'A' : 'a';
+
+            int p = c - offset;
+            int k = key[keyIndex % key.Length] - 'A';
+            char encryptedChar = (char)((p + k) % 26 + offset);
+
+            result.Append(encryptedChar);
+            keyIndex++;
+        }
+        else
+        {
+            result.Append(c);
         }
     }
 
-    StringBuilder cipherText = new StringBuilder();
-    int[] keyOrder = GetKeyOrder(key);
-
-    foreach (int col in keyOrder)
-    {
-        for (int row = 0; row < rows; row++)
-        {
-            cipherText.Append(matrix[row, col]);
-        }
-    }
-
-    return cipherText.ToString();
-}
-
-static int[] GetKeyOrder(string key)
-{
-    var keyChars = key.Select((ch, index) => new { Value = ch, Index = index })
-                      .OrderBy(x => x.Value)
-                      .Select(x => x.Index)
-                      .ToArray();
-    foreach (var keyChar in keyChars)
-    {
-        Console.WriteLine(keyChar);
-    }
-    return keyChars;
+    return result.ToString();
 }
 
 static string Decrypt(string ciphertext, string key)
 {
-    int columns = key.Length;
-    int rows = (int)Math.Ceiling((double)ciphertext.Length / columns);
-    char[,] matrix = new char[rows, columns];
+    StringBuilder result = new();
+    key = key.ToUpper();
+    int keyIndex = 0;
 
-    int[] keyOrder = GetKeyOrder(key);
-    int index = 0;
-
-    for (int i = 0; i < keyOrder.Length; i++)
+    foreach (char c in ciphertext)
     {
-        int col = keyOrder[i];
-        for (int row = 0; row < rows; row++)
+        if (char.IsLetter(c))
         {
-            if (index < ciphertext.Length)
-                matrix[row, col] = ciphertext[index++];
+            bool isUpper = char.IsUpper(c);
+            char offset = isUpper ? 'A' : 'a';
+
+            int p = c - offset;
+            int k = key[keyIndex % key.Length] - 'A';
+            char decryptedChar = (char)((p - k + 26) % 26 + offset);
+
+            result.Append(decryptedChar);
+            keyIndex++;
+        }
+        else
+        {
+            result.Append(c);
         }
     }
 
-    StringBuilder plainText = new StringBuilder();
-    for (int r = 0; r < rows; r++)
-    {
-        for (int c = 0; c < columns; c++)
-        {
-            plainText.Append(matrix[r, c]);
-        }
-    }
-
-    return plainText.ToString().Trim();
-}
-
-static int[] GetKeyOrderForDecryption(string key)
-{
-    int[] keyOrder = new int[key.Length];
-
-
-    var keyWithIndices = key.Select((ch, index) => new { Value = ch, Index = index })
-                            .OrderBy(x => x.Value) // Sort by character value
-                            .ToList();
-
-    for (int i = 0; i < key.Length; i++)
-    {
-        keyOrder[keyWithIndices[i].Index] = i;
-        Console.WriteLine(keyOrder[i]);
-    }
-    return keyOrder;
+    return result.ToString();
 }

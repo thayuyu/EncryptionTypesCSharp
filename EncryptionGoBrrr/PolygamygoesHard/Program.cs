@@ -120,7 +120,7 @@ static string MorphAlphabetAndKey(string alphabet, string key)
 
     key = key.ToUpper();
 
-    string remainingLetter = new string(alphabet.Except(key.ToCharArray()).ToArray());
+    string remainingLetter = new(alphabet.Except(key.ToCharArray()).ToArray());
     string altalphabet = new string(key
         .Where((c, i) => key.IndexOf(c) == i)
         .ToArray())
